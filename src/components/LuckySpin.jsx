@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { RefreshCw, CheckCircle, ArrowRight } from 'lucide-react';
+import { vfxBus } from '../services/vfxBus.js';
 
 // CONFIG: ORDER OF PRIZES ON THE WHEEL IMAGE (CLOCKWISE)
 // IMPORTANT: Adjust this array to match your 'roleta.png' exactly!
@@ -121,6 +122,12 @@ export default function LuckySpin({ spinLuckySpin, claimLuckySpinReward, complet
             spinTimerRef.current = null;
             claimLuckySpinReward?.();
             setUiState('SHOW_RESULT');
+            vfxBus.triggerScreenShake({ intensity: 6, duration: 80 });
+            vfxBus.triggerFloatingText({ text: `+${wonPrize} MOEDAS!`, type: 'win', duration: 1800 });
+            vfxBus.triggerCoinFountain({
+                count: Math.min(26, Math.max(12, Math.floor(wonPrize / 50))),
+                value: wonPrize
+            });
         }, 8000);
     };
 

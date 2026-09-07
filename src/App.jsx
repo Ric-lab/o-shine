@@ -22,6 +22,10 @@ import CloudBackup from './components/CloudBackup';
 import { useRewardedAd } from './hooks/useRewardedAd';
 import { adsAvailable } from './services/rewardedAds';
 import { useAutomaticProgress } from './hooks/useAutomaticProgress';
+import CoinFountain from './components/VFX/CoinFountain.jsx';
+import JuicinessOverlay from './components/VFX/JuicinessOverlay.jsx';
+import { vfxBus } from './services/vfxBus.js';
+import { setJuiceVolume } from './utils/audioJuice.js';
 
 export default function App() {
   const { busy: adBusy, watch } = useRewardedAd();
@@ -48,6 +52,7 @@ export default function App() {
   useEffect(() => {
     if (!audioHydratedRef.current) return;
     saveJSON(AUDIO_STORAGE_KEY, audioSettings).catch(() => {});
+    setJuiceVolume(audioSettings.sfx);
   }, [audioSettings]);
 
   const [gameStarted, setGameStarted] = useState(false);
@@ -252,6 +257,17 @@ export default function App() {
         if (!result.hasBingo && !result.isDefeat) {
           playLucky();
           showMessage('celebration', 'LUCKY!', `+${result.earned}🟡`, 1750);
+          vfxBus.triggerScreenShake({ intensity: 3, duration: 50 });
+          vfxBus.triggerFloatingText({
+            text: `+${result.earned}`,
+            origin: { x: window.innerWidth / 2, y: window.innerHeight * 0.70 },
+            type: 'gold'
+          });
+          vfxBus.triggerCoinFountain({
+            origin: { x: window.innerWidth / 2, y: window.innerHeight * 0.75 },
+            count: Math.min(16, Math.max(8, Math.floor(result.earned / 5))),
+            value: result.earned
+          });
         }
       } else {
         // Minimal Try Again - Only loop if NOT Game Over
@@ -486,6 +502,10 @@ export default function App() {
           playTicker={playPalheta}
         />
       )}
+      {/* Global Juiciness & VFX Layer */}
+      <CoinFountain />
+      <JuicinessOverlay />
+
       {adBusy && <div className="absolute inset-0 z-[200] bg-black/80 text-white flex items-center justify-center" role="status">Aguarde o anúncio…</div>}
       {storageError && <p role="alert" className="absolute bottom-0 inset-x-0 z-[210] bg-red-900 text-white p-3 text-sm">Não foi possível confirmar o salvamento. Libere espaço no aparelho. { !isReady && <button onClick={() => window.location.reload()}>Tentar novamente</button>}</p>}
       {(!isReady || cloud.booting || cloud.status === 'connecting' || cloud.status === 'restoring') && <div className="absolute inset-0 z-[200] bg-black/80 text-white flex items-center justify-center" role="status">Carregando progresso…</div>}

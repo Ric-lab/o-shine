@@ -1,5 +1,6 @@
 import React from 'react';
 import { Menu } from 'lucide-react';
+import NumberTicker from './VFX/NumberTicker.jsx';
 
 export default function Header({ level, coins, onOpenMenu, getImage, getImmutableImage }) {
     const currentLevel = level || 1;
@@ -13,10 +14,17 @@ export default function Header({ level, coins, onOpenMenu, getImage, getImmutabl
     return (
         <div className="w-full h-[50px] backdrop-blur-md bg-white/10 flex items-center justify-between px-4 z-30 flex-shrink-0 relative">
 
-            {/* Left: Coins Display */}
-            <div className="flex items-center gap-1 bg-gray-100 pl-2 pr-2 py-0.5 rounded-full border border-gray-200 shadow-sm">
-                <img src={getImmutableImage('Coin.png')} alt="Coins" className="w-[18px] h-[18px] object-contain" />
-                <span className="font-black text-sm text-gray-700 tracking-wide">{coins}</span>
+            {/* Left: Coins Display with Juiciness Target Anchor */}
+            <div
+                id="header-coin-badge"
+                className="flex items-center gap-1.5 bg-gradient-to-r from-amber-100/90 to-yellow-100/90 pl-2 pr-3 py-0.5 rounded-full border border-amber-300 shadow-[0_2px_8px_rgba(245,158,11,0.2)] backdrop-blur-sm"
+            >
+                <img
+                    src={getImmutableImage('Coin.png')}
+                    alt="Coins"
+                    className="w-[20px] h-[20px] object-contain drop-shadow-[0_1px_2px_rgba(0,0,0,0.2)]"
+                />
+                <NumberTicker value={coins} className="text-amber-900 text-sm tracking-wide" />
             </div>
 
             {/* Center: Card Level Balloon */}

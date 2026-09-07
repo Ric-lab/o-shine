@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { vfxBus } from '../../services/vfxBus.js';
 
 export default function NextLevelModal({
     level,
@@ -9,7 +10,13 @@ export default function NextLevelModal({
 }) {
     useEffect(() => {
         playBingo?.();
-    }, [playBingo]);
+        vfxBus.triggerScreenShake({ intensity: 5, duration: 70 });
+        vfxBus.triggerFloatingText({ text: 'BINGO!', type: 'win', duration: 1500 });
+        vfxBus.triggerCoinFountain({
+            count: 22,
+            value: reward ?? (100 + level)
+        });
+    }, [playBingo, reward, level]);
 
     return (
         <div className="absolute inset-0 z-50 flex flex-col items-center justify-end pb-16 w-full h-full bg-black/90 overflow-hidden">
