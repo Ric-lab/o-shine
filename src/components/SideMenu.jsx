@@ -80,7 +80,7 @@ export default function SideMenu({ isOpen, onClose, onGoHome, settings, onUpdate
                     {children}
                     {/* Navigation */}
                     <nav className="flex flex-col gap-1 px-2">
-                        <MenuItem icon={<Home size={20} />} label="Voltar ao Início" onClick={() => { onClose(); onGoHome?.(); }} />
+                        <MenuItem icon={<Home size={20} />} label="Lobby de Jogos (Hub)" onClick={() => { onClose(); onGoHome?.(); }} />
                         <MenuItem icon={<HelpCircle size={20} />} label="Help" onClick={onClose} />
                     </nav>
                 </div>

@@ -1,8 +1,8 @@
 import React from 'react';
-import { Menu } from 'lucide-react';
+import { Menu, Home } from 'lucide-react';
 import NumberTicker from './VFX/NumberTicker.jsx';
 
-export default function Header({ level, coins, onOpenMenu, getImage, getImmutableImage }) {
+export default function Header({ level, coins, onOpenMenu, onGoHome, getImage, getImmutableImage }) {
     const currentLevel = level || 1;
     let balloonImage = 'balloongreen.png';
     if (currentLevel % 5 === 0) {
@@ -47,13 +47,24 @@ export default function Header({ level, coins, onOpenMenu, getImage, getImmutabl
                 </div>
             )}
 
-            {/* Right: Menu */}
-            <button
-                onClick={onOpenMenu}
-                className="p-1.5 bg-gray-50 hover:bg-gray-100 rounded-full border border-gray-200 transition-colors shadow-sm text-gray-700"
-            >
-                <Menu size={18} />
-            </button>
+            {/* Right: Quick Lobby & Menu */}
+            <div className="flex items-center gap-1.5">
+                {onGoHome && (
+                    <button
+                        onClick={onGoHome}
+                        title="Voltar ao Lobby do Hub"
+                        className="p-1.5 bg-white/80 hover:bg-white rounded-full border border-amber-200 transition-all shadow-sm text-amber-700 active:scale-90"
+                    >
+                        <Home size={18} />
+                    </button>
+                )}
+                <button
+                    onClick={onOpenMenu}
+                    className="p-1.5 bg-gray-50 hover:bg-gray-100 rounded-full border border-gray-200 transition-colors shadow-sm text-gray-700 active:scale-90"
+                >
+                    <Menu size={18} />
+                </button>
+            </div>
 
         </div>
     );

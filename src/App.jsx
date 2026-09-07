@@ -26,6 +26,7 @@ import CoinFountain from './components/VFX/CoinFountain.jsx';
 import JuicinessOverlay from './components/VFX/JuicinessOverlay.jsx';
 import { vfxBus } from './services/vfxBus.js';
 import { setJuiceVolume } from './utils/audioJuice.js';
+import HubLobby from './components/HubLobby.jsx';
 
 export default function App() {
   const { busy: adBusy, watch } = useRewardedAd();
@@ -287,84 +288,106 @@ export default function App() {
         backgroundPosition: 'center'
       }}
     >
-      {/* HOME SCREEN OVERLAY */}
-      {!gameStarted && (
-        <div
-          className="absolute inset-0 z-[60] bg-black flex flex-col items-center justify-center"
-        >
-          {/* Background Image */}
-          <img
-            src={getImmutableImage('Home.png')}
-            alt="Background"
-            className="absolute inset-0 w-full h-full object-cover"
+      {/* HUB CENTRAL LOBBY OU JOGO ATIVO */}
+      {!gameStarted ? (
+        <HubLobby
+          coins={coins}
+          level={level}
+          onPlayBingoPlinko={(mode) => {
+            playClick();
+            if (gameMode === mode) {
+              initLevel();
+            } else {
+              setGameMode(mode);
+            }
+            setGameStarted(true);
+          }}
+          onOpenLuckySpin={() => {
+            playClick();
+            spinLuckySpin();
+          }}
+          onOpenMenu={() => {
+            playClick();
+            setIsMenuOpen(true);
+          }}
+          playClick={playClick}
+        />
+      ) : (
+        <>
+          <Header
+            level={level}
+            coins={coins}
+            onOpenMenu={() => {
+              playClick();
+              setIsMenuOpen(true);
+            }}
+            onGoHome={() => {
+              playClick();
+              setGameStarted(false);
+            }}
+            getImage={getImage}
+            getImmutableImage={getImmutableImage}
           />
 
-          {/* Game Mode Buttons */}
-          <button onClick={() => setIsMenuOpen(true)} className="absolute top-4 right-4 z-10 rounded-full bg-white/90 text-gray-900 px-4 py-2 text-sm font-semibold">
-            Progresso e ajustes
-          </button>
-          <div className="relative z-10 flex flex-col gap-6 items-center mt-[40vh]">
-            {/* Bingo (New Mode) */}
-            <button
-              onClick={() => {
-                playClick();
-                if (gameMode === 'BINGO') {
-                  initLevel();
-                } else {
-                  setGameMode('BINGO');
-                }
-                setGameStarted(true);
-              }}
-              className="w-64 transition-transform hover:scale-105 active:scale-95"
-            >
-              <img src={getImmutableImage('BingoButton.png')} alt="Bingo" className="w-full drop-shadow-2xl" />
-            </button>
-
-            {/* Fingo (Standard Mode) */}
-            <button
-              onClick={() => {
-                playClick();
-                if (gameMode === 'FINGO') {
-                  initLevel();
-                } else {
-                  setGameMode('FINGO');
-                }
-                setGameStarted(true);
-              }}
-              className="w-64 transition-transform hover:scale-105 active:scale-95"
-            >
-              <img src={getImmutableImage('FingoButton.png')} alt="Fingo" className="w-full drop-shadow-2xl" />
-            </button>
-
-            {/* Spingo (New Mode) */}
-            <button
-              onClick={() => {
-                playClick();
-                if (gameMode === 'SPINGO') {
-                  initLevel();
-                } else {
-                  setGameMode('SPINGO');
-                }
-                setGameStarted(true);
-              }}
-              className="w-64 transition-transform hover:scale-105 active:scale-95"
-            >
-              <img src={getImmutableImage('SpingoButton.png')} alt="Spingo" className="w-full drop-shadow-2xl" />
-            </button>
+          {/* Bingo Card (Compact: 85% width) */}
+          <div className="flex-shrink-0 w-full flex justify-center pb-0 bg-white/10 backdrop-blur-md z-10 border-b border-white/20">
+            <div className="w-[85%] max-w-[360px]">
+              <BingoCard
+                card={bingoCard}
+                level={level}
+                getImage={getImage}
+              />
+            </div>
           </div>
-        </div>
-      )}
 
-      <Header
-        level={level}
-        coins={coins}
-        onOpenMenu={() => {
-          playClick();
-          setIsMenuOpen(true);
-        }}
-        getImage={getImage}
-        getImmutableImage={getImmutableImage}
-      />
+          {/* Physics Area + Interactive Pipes */}
+          <div className="flex-1 w-full relative bg-transparent overflow-hidden shadow-inner mt-[10px]">
+            <div className="absolute inset-0">
+              <GameCanvas
+                key={canvasGeneration}
+                ref={canvasRef}
+                onBallLanded={handleBallLanded}
+                onPegHit={playPeg}
+                vibrationLevel={audioSettings.vibration}
+                getImage={getImage}
+                goldenCols={goldenCols}
+              />
+            </div>
+
+            {/* Overlay Interactive Pipes */}
+            <BucketRow
+              slotsResult={slotsResult}
+              bingoCard={bingoCard}
+              onSlotClick={handleSlotClick}
+              phase={phase}
+              fireBallActive={fireBallActive}
+              magicActive={magicActive}
+              playClick={playClick}
+            />
+          </div>
+
+          {/* Compact Footer */}
+          <div className="flex-shrink-0 z-30">
+            <Footer
+              phase={phase}
+              coins={coins}
+              balls={balls}
+              onSpin={(val) => {
+                playClick();
+                startSpin(val);
+              }}
+              onPowerUp={(type) => {
+                playClick();
+                if (type === 'fireball') {
+                  setShowFireballConfirm(true);
+                }
+                else if (type === 'magic') setShowMagicModal(true);
+              }}
+              getImage={getImage}
+            />
+          </div>
+        </>
+      )}
 
       <SideMenu
         isOpen={isMenuOpen}
@@ -378,64 +401,6 @@ export default function App() {
       >
         <CloudBackup cloud={cloud} canRestore={!gameStarted && !adBusy} progress={progress} />
       </SideMenu>
-
-      {/* Bingo Card (Compact: 85% width) */}
-      <div className="flex-shrink-0 w-full flex justify-center pb-0 bg-white/10 backdrop-blur-md z-10 border-b border-white/20">
-        <div className="w-[85%] max-w-[360px]">
-          <BingoCard
-            card={bingoCard}
-            level={level}
-            getImage={getImage}
-          />
-        </div>
-      </div>
-
-      {/* Physics Area + Interactive Pipes */}
-      <div className="flex-1 w-full relative bg-transparent overflow-hidden shadow-inner mt-[10px]">
-        <div className="absolute inset-0">
-          <GameCanvas
-            key={canvasGeneration}
-            ref={canvasRef}
-            onBallLanded={handleBallLanded}
-            onPegHit={playPeg}
-            vibrationLevel={audioSettings.vibration}
-            getImage={getImage}
-            goldenCols={goldenCols}
-          />
-        </div>
-
-        {/* Overlay Interactive Pipes */}
-        <BucketRow
-          slotsResult={slotsResult}
-          bingoCard={bingoCard}
-          onSlotClick={handleSlotClick}
-          phase={phase}
-          fireBallActive={fireBallActive}
-          magicActive={magicActive}
-          playClick={playClick}
-        />
-      </div>
-
-      {/* Compact Footer */}
-      <div className="flex-shrink-0 z-30">
-        <Footer
-          phase={phase}
-          coins={coins}
-          balls={balls}
-          onSpin={(val) => {
-            playClick();
-            startSpin(val);
-          }}
-          onPowerUp={(type) => {
-            playClick();
-            if (type === 'fireball') {
-              setShowFireballConfirm(true);
-            }
-            else if (type === 'magic') setShowMagicModal(true);
-          }}
-          getImage={getImage}
-        />
-      </div>
 
       <MagicNumberModal
         watchReward={watchReward}
