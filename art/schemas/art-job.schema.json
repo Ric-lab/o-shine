@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://o-shine.local/schemas/art-job.schema.json",
+  "title": "O-Shine Art Job",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "slug",
+    "brief",
+    "stage",
+    "concept",
+    "approval",
+    "model",
+    "render",
+    "visualQa",
+    "vfx",
+    "integration",
+    "finalQa",
+    "history"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "slug": {
+      "type": "string"
+    },
+    "brief": {
+      "type": "string"
+    },
+    "stage": {
+      "enum": [
+        "BRIEFED",
+        "RESEARCHED",
+        "ART_DIRECTED",
+        "CONCEPT_GENERATED",
+        "CONCEPT_APPROVED",
+        "MODEL_GENERATED",
+        "BLENDER_RENDERED",
+        "VISUAL_QA_PASSED",
+        "VFX_COMPLETED",
+        "INTEGRATED",
+        "FINAL_QA_PASSED",
+        "DONE"
+      ]
+    },
+    "concept": {
+      "type": "object"
+    },
+    "approval": {
+      "type": "object"
+    },
+    "model": {
+      "type": "object"
+    },
+    "render": {
+      "type": "object"
+    },
+    "visualQa": {
+      "type": "object"
+    },
+    "vfx": {
+      "type": "object"
+    },
+    "integration": {
+      "type": "object"
+    },
+    "finalQa": {
+      "type": "object"
+    },
+    "history": {
+      "type": "array"
+    }
+  },
+  "additionalProperties": true
+}

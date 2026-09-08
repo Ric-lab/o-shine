@@ -11,6 +11,8 @@ Todo o plano de desenvolvimento, filosofia de design de estúdio (Supercell / Dr
 
 👉 **[MASTER-ROADMAP.md](./MASTER-ROADMAP.md)** 👈
 
+A esteira agêntica oficial de arte (pesquisa → direção de arte → Meshy → Blender → 2.5D → QA visual → VFX) está documentada em **[docs/agents/O_SHINE_ART_PIPELINE.md](./docs/agents/O_SHINE_ART_PIPELINE.md)**, com o setup de ferramentas locais em **[docs/agents/SETUP_AGENT_TOOLS.md](./docs/agents/SETUP_AGENT_TOOLS.md)**.
+
 ---
 
 ## 🚀 Comandos Rápidos
