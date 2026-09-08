@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { vfxBus } from '../src/services/vfxBus.js';
-import { setJuiceVolume, playCoinTinkle, playOdometerTick, playJuicyHit } from '../src/utils/audioJuice.js';
+import { setJuiceVolume, playCoinTinkle, playOdometerTick, playJuicyHit, playReelTick, playReelStop, playPaylineWin, playScatterHit } from '../src/utils/audioJuice.js';
 
 test('vfxBus registers listeners and dispatches events correctly', () => {
     let receivedFountain = null;
@@ -47,5 +47,12 @@ test('audioJuice synthesizes sounds safely in headless environment without crash
         playCoinTinkle(3);
         playOdometerTick();
         playJuicyHit(80);
+        playReelTick();
+        playReelStop(0);
+        playReelStop(1);
+        playReelStop(2);
+        playPaylineWin();
+        playScatterHit();
     });
 });
+

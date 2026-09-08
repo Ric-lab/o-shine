@@ -23,12 +23,12 @@ const GAMES_CATALOG = [
         id: 'MATCH_MACHINE',
         title: 'Match Machine (777)',
         tagline: 'Slot 3x3 clássico com rolos dourados e multiplicadores selvagens',
-        status: 'COMING_SOON',
-        badge: 'EM BREVE',
-        badgeColor: 'bg-amber-600/80 text-amber-100',
+        status: 'PLAYABLE',
+        badge: 'JOGAR AGORA',
+        badgeColor: 'bg-gradient-to-r from-amber-400 to-yellow-500 text-stone-950 font-black',
         icon: '🐯',
-        gradient: 'from-yellow-600/20 via-red-900/20 to-stone-900/40',
-        border: 'border-yellow-500/30'
+        gradient: 'from-amber-600/30 via-red-900/30 to-stone-900/40',
+        border: 'border-yellow-400/70 shadow-[0_0_20px_rgba(245,158,11,0.35)]'
     },
     {
         id: 'RASPADINHA_ROYALE',
@@ -113,6 +113,7 @@ export default function HubLobby({
     coins = 1000,
     level = 1,
     onPlayBingoPlinko,
+    onPlayMatchMachine,
     onOpenLuckySpin,
     onOpenMenu,
     playClick
@@ -212,7 +213,7 @@ export default function HubLobby({
                         Catálogo de Jogos (9)
                     </h3>
                     <span className="text-[11px] font-bold text-amber-400/80">
-                        1 Ativo • 8 em Produção
+                        2 Ativos • 7 em Produção
                     </span>
                 </div>
 
@@ -251,7 +252,7 @@ export default function HubLobby({
                                     </div>
                                 </div>
 
-                                {isPlayable && (
+                                {isPlayable && game.id === 'BINGO_PLINKO' && (
                                     <div className="mt-4 pt-3 border-t border-white/10 flex flex-col gap-2">
                                         <div className="flex gap-2">
                                             {game.modes?.map((m) => (
@@ -275,6 +276,21 @@ export default function HubLobby({
                                         >
                                             <Play size={16} fill="currentColor" />
                                             JOGAR {selectedMode} AGORA
+                                        </button>
+                                    </div>
+                                )}
+
+                                {isPlayable && game.id === 'MATCH_MACHINE' && (
+                                    <div className="mt-4 pt-3 border-t border-white/10 flex flex-col gap-2">
+                                        <button
+                                            onClick={() => {
+                                                playClick?.();
+                                                onPlayMatchMachine?.();
+                                            }}
+                                            className="w-full py-3 rounded-xl bg-gradient-to-r from-red-600 via-amber-500 to-yellow-500 hover:from-red-500 hover:to-amber-400 text-stone-950 font-black text-sm tracking-wider uppercase shadow-[0_4px_15px_rgba(245,158,11,0.5)] active:scale-95 transition-all flex items-center justify-center gap-2 border border-yellow-300/80"
+                                        >
+                                            <Play size={16} fill="currentColor" />
+                                            JOGAR MATCH MACHINE 777 AGORA
                                         </button>
                                     </div>
                                 )}

@@ -156,3 +156,148 @@ export function playJuicyHit(pitch = 100, volume = 0.8) {
         // Silently ignore
     }
 }
+
+/**
+ * Mechanical spin ratchet tick for slot machine reels
+ */
+export function playReelTick(volume = 0.15) {
+    if (sfxVolume <= 0) return;
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    try {
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const effectiveVol = 0.08 * sfxVolume * volume;
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(1200, now);
+        osc.frequency.exponentialRampToValueAtTime(300, now + 0.012);
+
+        gain.gain.setValueAtTime(effectiveVol, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.014);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.016);
+    } catch {
+        // Silently ignore
+    }
+}
+
+/**
+ * Heavy mechanical latch thud when a reel stops.
+ * Ascending pitch for reel 0 (220Hz - A3), reel 1 (277Hz - C#4), reel 2 (330Hz - E4)
+ */
+export function playReelStop(reelIndex = 0, volume = 0.8) {
+    if (sfxVolume <= 0) return;
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    try {
+        const now = ctx.currentTime;
+        const baseFreqs = [220, 277.18, 329.63];
+        const baseFreq = baseFreqs[Math.min(reelIndex, baseFreqs.length - 1)] || 220;
+
+        // 1. Bass Thud
+        const oscBass = ctx.createOscillator();
+        const gainBass = ctx.createGain();
+        oscBass.type = 'sine';
+        oscBass.frequency.setValueAtTime(baseFreq * 0.8, now);
+        oscBass.frequency.exponentialRampToValueAtTime(50, now + 0.08);
+
+        gainBass.gain.setValueAtTime(0.25 * sfxVolume * volume, now);
+        gainBass.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+
+        oscBass.connect(gainBass);
+        gainBass.connect(ctx.destination);
+
+        // 2. Metallic Snap / Clack
+        const oscClick = ctx.createOscillator();
+        const gainClick = ctx.createGain();
+        oscClick.type = 'triangle';
+        oscClick.frequency.setValueAtTime(baseFreq * 3, now);
+        oscClick.frequency.exponentialRampToValueAtTime(baseFreq, now + 0.04);
+
+        gainClick.gain.setValueAtTime(0.18 * sfxVolume * volume, now);
+        gainClick.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+
+        oscClick.connect(gainClick);
+        gainClick.connect(ctx.destination);
+
+        oscBass.start(now);
+        oscBass.stop(now + 0.13);
+        oscClick.start(now);
+        oscClick.stop(now + 0.06);
+    } catch {
+        // Silently ignore
+    }
+}
+
+/**
+ * Ascending celebratory arpeggio chime for payline wins
+ */
+export function playPaylineWin(volume = 0.8) {
+    if (sfxVolume <= 0) return;
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    try {
+        const now = ctx.currentTime;
+        const chord = [523.25, 659.25, 783.99, 1046.50]; // C Major arpeggio
+        chord.forEach((freq, idx) => {
+            const noteTime = now + (idx * 0.05);
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, noteTime);
+
+            gain.gain.setValueAtTime(0.0001, noteTime);
+            gain.gain.linearRampToValueAtTime(0.18 * sfxVolume * volume, noteTime + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.0001, noteTime + 0.35);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start(noteTime);
+            osc.stop(noteTime + 0.38);
+        });
+    } catch {
+        // Silently ignore
+    }
+}
+
+/**
+ * Electric energy ping for Scatter symbols
+ */
+export function playScatterHit(volume = 0.9) {
+    if (sfxVolume <= 0) return;
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    try {
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(440, now);
+        osc.frequency.exponentialRampToValueAtTime(1760, now + 0.18);
+
+        gain.gain.setValueAtTime(0.15 * sfxVolume * volume, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.24);
+    } catch {
+        // Silently ignore
+    }
+}
+

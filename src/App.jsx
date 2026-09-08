@@ -27,6 +27,7 @@ import JuicinessOverlay from './components/VFX/JuicinessOverlay.jsx';
 import { vfxBus } from './services/vfxBus.js';
 import { setJuiceVolume } from './utils/audioJuice.js';
 import HubLobby from './components/HubLobby.jsx';
+import MatchMachine from './components/MatchMachine/MatchMachine.jsx';
 
 export default function App() {
   const { busy: adBusy, watch } = useRewardedAd();
@@ -56,18 +57,36 @@ export default function App() {
     setJuiceVolume(audioSettings.sfx);
   }, [audioSettings]);
 
-  const [gameStarted, setGameStarted] = useState(false);
+  const [activeGame, setActiveGame] = useState('LOBBY'); // 'LOBBY' | 'BINGO_PLINKO' | 'MATCH_MACHINE'
+  const gameStarted = activeGame === 'BINGO_PLINKO';
   const [gameMode, setGameMode] = useState('FINGO');
 
   const {
     state: { coins, balls, level, levels, isReady, storageError, bingoCard, slotsResult, winState, winReward, phase, fireBallActive, magicActive, luckySpinReward },
-    actions: { initLevel, startSpin, dropBall, resolveTurn, buyItem, nextLevel, spinLuckySpin, claimLuckySpinReward, completeLuckySpin, restoreProgress }
+    actions: { modifyCoins, initLevel, startSpin, dropBall, resolveTurn, buyItem, nextLevel, spinLuckySpin, claimLuckySpinReward, completeLuckySpin, restoreProgress }
   } = useGameLogic(gameMode);
+
+  const wallet = useMemo(() => ({
+    coins,
+    withdraw: (amount) => {
+      if (coins >= amount) {
+        modifyCoins(-amount);
+        return true;
+      }
+      return false;
+    },
+    deposit: (amount) => {
+      modifyCoins(amount);
+      return coins + amount;
+    },
+    canAfford: (amount) => coins >= amount
+  }), [coins, modifyCoins]);
+
   const progress = useMemo(() => ({ coins, levels }), [coins, levels]);
   const cloud = useAutomaticProgress({
-    progress, ready: isReady, canRestore: !gameStarted && !adBusy,
+    progress, ready: isReady, canRestore: activeGame === 'LOBBY' && !adBusy,
     apply: value => {
-      if (gameStarted || adBusy) throw new Error('Aguarde a volta ao início.');
+      if (activeGame !== 'LOBBY' || adBusy) throw new Error('Aguarde a volta ao início.');
       restoreProgress(value);
       setCanvasGeneration(count => count + 1);
     },
@@ -289,7 +308,7 @@ export default function App() {
       }}
     >
       {/* HUB CENTRAL LOBBY OU JOGO ATIVO */}
-      {!gameStarted ? (
+      {activeGame === 'LOBBY' && (
         <HubLobby
           coins={coins}
           level={level}
@@ -300,7 +319,11 @@ export default function App() {
             } else {
               setGameMode(mode);
             }
-            setGameStarted(true);
+            setActiveGame('BINGO_PLINKO');
+          }}
+          onPlayMatchMachine={() => {
+            playClick();
+            setActiveGame('MATCH_MACHINE');
           }}
           onOpenLuckySpin={() => {
             playClick();
@@ -312,7 +335,21 @@ export default function App() {
           }}
           playClick={playClick}
         />
-      ) : (
+      )}
+
+      {activeGame === 'MATCH_MACHINE' && (
+        <MatchMachine
+          wallet={wallet}
+          onBack={() => {
+            playClick();
+            setActiveGame('LOBBY');
+          }}
+          onOpenLuckySpin={() => spinLuckySpin()}
+          onWatchAdReward={() => watchReward('coins', 100)}
+        />
+      )}
+
+      {activeGame === 'BINGO_PLINKO' && (
         <>
           <Header
             level={level}
@@ -323,7 +360,7 @@ export default function App() {
             }}
             onGoHome={() => {
               playClick();
-              setGameStarted(false);
+              setActiveGame('LOBBY');
             }}
             getImage={getImage}
             getImmutableImage={getImmutableImage}
@@ -394,12 +431,12 @@ export default function App() {
         onClose={() => setIsMenuOpen(false)}
         onGoHome={() => {
           setIsMenuOpen(false);
-          setGameStarted(false);
+          setActiveGame('LOBBY');
         }}
         settings={audioSettings}
         onUpdateSettings={setAudioSettings}
       >
-        <CloudBackup cloud={cloud} canRestore={!gameStarted && !adBusy} progress={progress} />
+        <CloudBackup cloud={cloud} canRestore={activeGame === 'LOBBY' && !adBusy} progress={progress} />
       </SideMenu>
 
       <MagicNumberModal

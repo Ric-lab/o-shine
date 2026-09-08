@@ -501,6 +501,11 @@ export function useGameLogic(gameMode = 'FINGO') {
         return false;
     };
 
+    const modifyCoins = (amount) => {
+        if (!Number.isFinite(amount)) return;
+        setCoins(c => Math.max(0, c + Math.round(amount)));
+    };
+
     return {
         state: {
             levels,
@@ -520,6 +525,7 @@ export function useGameLogic(gameMode = 'FINGO') {
             luckySpinReward
         },
         actions: {
+            modifyCoins,
             restoreProgress,
             initLevel,
             startSpin,
