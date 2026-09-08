@@ -20,9 +20,8 @@ For every task involving game art, visual redesign, 2D concepts, 3D assets, spri
 
 1. Read `docs/agents/O_SHINE_ART_PIPELINE.md`.
 2. Use the `oshine-art` skill when your client supports skills.
-   - Codex project skill: `.codex/skills/oshine-art/SKILL.md`
    - Claude Code project skill: `.claude/skills/oshine-art/SKILL.md`
-   - Antigravity project skill: `.agents/skills/oshine-art/SKILL.md`
+   - Codex + Antigravity shared project skill: `.agents/skills/oshine-art/SKILL.md`
 3. Create or activate an art job with `node tools/art_pipeline.mjs`.
 4. Work through the job stages in order. Do not skip stages.
 5. Never start production 3D before an approved 2D concept exists.
