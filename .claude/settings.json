@@ -1,0 +1,19 @@
+{
+  "enabledMcpjsonServers": [
+    "meshy",
+    "blender"
+  ],
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "mcp__meshy__.*|mcp__blender__.*|Bash|Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"node (Join-Path $env:CLAUDE_PROJECT_DIR 'tools/art_guard.mjs')\""
+          }
+        ]
+      }
+    ]
+  }
+}

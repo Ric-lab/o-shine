@@ -1,0 +1,16 @@
+{
+  "oshine-art-pipeline-guard": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ./tools/art_guard.mjs",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

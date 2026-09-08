@@ -1,0 +1,19 @@
+{
+  "description": "O-Shine art pipeline stage guard. Review/trust this project hook before relying on it.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/tools/art_guard.mjs\"",
+            "commandWindows": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"$root=(git rev-parse --show-toplevel).Trim(); node (Join-Path $root 'tools/art_guard.mjs')\"",
+            "timeout": 10,
+            "statusMessage": "Checking O-Shine art pipeline stage"
+          }
+        ]
+      }
+    ]
+  }
+}
