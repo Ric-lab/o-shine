@@ -1,0 +1,35 @@
+@font-face {
+  font-family: "O Shine Royal Display";
+  src:
+    url("/fonts/o-shine-royal-display/OShineRoyalDisplay-Regular.woff2") format("woff2"),
+    url("/fonts/o-shine-royal-display/OShineRoyalDisplay-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+}
+
+.oshine-display {
+  font-family: "O Shine Royal Display", Georgia, serif;
+  font-weight: 800;
+  line-height: 0.94;
+  letter-spacing: 0.015em;
+}
+
+.oshine-display--gold {
+  color: #ffd52d;
+  -webkit-text-stroke: 0.055em #7a2d00;
+  paint-order: stroke fill;
+  text-shadow:
+    0 0.055em 0 #e67e00,
+    0 0.11em 0 #7b2400,
+    0 0.16em 0 rgba(50, 10, 70, 0.45);
+}
+
+.oshine-display--ivory {
+  color: #fff5e9;
+  -webkit-text-stroke: 0.05em #5b1879;
+  paint-order: stroke fill;
+  text-shadow:
+    0 0.06em 0 #32104f,
+    0 0.12em 0 rgba(25, 5, 45, 0.48);
+}
